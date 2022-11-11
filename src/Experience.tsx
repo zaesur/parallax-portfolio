@@ -8,6 +8,7 @@ import {
 import { FunctionComponent, Suspense, useRef } from "react";
 import {
   ConeGeometry,
+  Group,
   MeshToonMaterial,
   NearestFilter,
   TorusGeometry,
@@ -26,6 +27,7 @@ const geometries = [
 
 const Experience: FunctionComponent = () => {
   const distance = 4;
+  const groupRef = useRef<Group>(null!);
   const gradientTexture = useTexture(gradientTexturePath);
 
   const { current: material } = useRef(
@@ -38,19 +40,24 @@ const Experience: FunctionComponent = () => {
     })()
   );
 
-  useFrame(() => {
+  useFrame(({ mouse }) => {
+    const { position } = groupRef.current;
 
+    position.x += (mouse.x * 0.1 - position.x) * 0.1;
+    position.y += (mouse.y * 0.1 - position.y) * 0.1;
   });
 
   return (
     <Suspense fallback={<Html>Loading...</Html>}>
-      <PerspectiveCamera
-        makeDefault
-        fov={35}
-        near={0.1}
-        far={100}
-        position={[0, 0, 6]}
-      />
+      <group ref={groupRef}>
+        <PerspectiveCamera
+          makeDefault
+          fov={35}
+          near={0.1}
+          far={100}
+          position={[0, 0, 6]}
+        />
+      </group>
       <directionalLight position={[1, 1, 0]} />
       <ScrollControls pages={geometries.length}>
         <Scroll>

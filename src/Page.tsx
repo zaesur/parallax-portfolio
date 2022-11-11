@@ -1,5 +1,5 @@
 import { MeshProps, useFrame } from "@react-three/fiber";
-import { FunctionComponent, useRef, useState } from "react";
+import { FunctionComponent, useRef } from "react";
 import { BufferGeometry, Material, Mesh } from "three";
 
 interface PageProps extends Pick<MeshProps, "position"> {
