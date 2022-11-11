@@ -1,19 +1,33 @@
-import { useTexture } from "@react-three/drei";
+import {
+  Html,
+  PerspectiveCamera,
+  Scroll,
+  ScrollControls,
+  useTexture,
+} from "@react-three/drei";
+import { FunctionComponent, Suspense, useRef } from "react";
+import {
+  ConeGeometry,
+  MeshToonMaterial,
+  NearestFilter,
+  TorusGeometry,
+  TorusKnotGeometry,
+} from "three";
+import Page from "./Page";
 import { useFrame } from "@react-three/fiber";
-import { FunctionComponent, useRef } from "react";
-import { Group, Mesh, MeshToonMaterial, NearestFilter, Object3D } from "three";
 import gradientTexturePath from "/public/textures/gradients/3.jpg";
+import "./Experience.css";
 
-const isMesh = (object3D: Object3D): object3D is Mesh =>
-  (object3D as Mesh).isMesh;
+const geometries = [
+  new TorusGeometry(1, 0.4, 16, 60),
+  new ConeGeometry(1, 2, 32),
+  new TorusKnotGeometry(0.8, 0.35, 100, 16),
+];
 
-interface ExperienceProps {
-  distance: number;
-}
-
-const Experience: FunctionComponent<ExperienceProps> = ({ distance }) => {
-  const meshesRef = useRef<Group>(null!);
+const Experience: FunctionComponent = () => {
+  const distance = 4;
   const gradientTexture = useTexture(gradientTexturePath);
+
   const { current: material } = useRef(
     (() => {
       gradientTexture.magFilter = NearestFilter;
@@ -24,32 +38,46 @@ const Experience: FunctionComponent<ExperienceProps> = ({ distance }) => {
     })()
   );
 
-  useFrame((_, delta) => {
-    meshesRef.current.traverse((mesh) => {
-      if (isMesh(mesh)) {
-        mesh.rotation.x += delta * 0.1;
-        mesh.rotation.y += delta * 0.12;
-      }
-    });
+  useFrame(() => {
+
   });
 
   return (
-    <group ref={meshesRef}>
-      <mesh position={[0, -distance * 0, 0]}>
-        <torusGeometry args={[1, 0.4, 16, 60]} />
-        <primitive object={material} />
-      </mesh>
-
-      <mesh position={[0, -distance * 1, 0]}>
-        <coneGeometry args={[1, 2, 32]} />
-        <primitive object={material} />
-      </mesh>
-
-      <mesh position={[0, -distance * 2, 0]}>
-        <torusKnotGeometry args={[0.8, 0.35, 100, 16]} />
-        <primitive object={material} />
-      </mesh>
-    </group>
+    <Suspense fallback={<Html>Loading...</Html>}>
+      <PerspectiveCamera
+        makeDefault
+        fov={35}
+        near={0.1}
+        far={100}
+        position={[0, 0, 6]}
+      />
+      <directionalLight position={[1, 1, 0]} />
+      <ScrollControls pages={geometries.length}>
+        <Scroll>
+          {geometries.map((geometry, index) => (
+            <Page
+              index={index}
+              total={geometries.length}
+              key={geometry.uuid}
+              geometry={geometry}
+              material={material}
+              position={[index % 2 ? 2 : -2, -distance * index, 0]}
+            />
+          ))}
+        </Scroll>
+        <Scroll html>
+          <section className="section">
+            <h1>My Portfolio</h1>
+          </section>
+          <section className="section">
+            <h2>My projects</h2>
+          </section>
+          <section className="section">
+            <h2>Contact me</h2>
+          </section>
+        </Scroll>
+      </ScrollControls>
+    </Suspense>
   );
 };
 
