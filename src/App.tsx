@@ -2,6 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import Experience from "./Experience";
 import "./App.css";
 import { PerspectiveCamera } from "@react-three/drei";
+import { Suspense } from "react";
 
 function App() {
   return (
@@ -15,7 +16,10 @@ function App() {
             far={100}
             position={[0, 0, 6]}
           />
-          <Experience />
+          <directionalLight position={[1, 1, 0]} />
+          <Suspense fallback={null}>
+            <Experience distance={4} />
+          </Suspense>
         </Canvas>
       </div>
 
