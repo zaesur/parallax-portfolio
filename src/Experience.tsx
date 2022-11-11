@@ -8,16 +8,15 @@ import {
 import { FunctionComponent, Suspense, useRef } from "react";
 import {
   ConeGeometry,
-  Group,
   MeshToonMaterial,
   NearestFilter,
   TorusGeometry,
   TorusKnotGeometry,
 } from "three";
 import Page from "./Page";
-import { useFrame } from "@react-three/fiber";
 import gradientTexturePath from "/public/textures/gradients/3.jpg";
 import "./Experience.css";
+import Parallax from "./Parallax";
 
 const geometries = [
   new TorusGeometry(1, 0.4, 16, 60),
@@ -27,40 +26,39 @@ const geometries = [
 
 const Experience: FunctionComponent = () => {
   const distance = 4;
-  const groupRef = useRef<Group>(null!);
+  const color = "#ffeded";
   const gradientTexture = useTexture(gradientTexturePath);
 
   const { current: material } = useRef(
     (() => {
       gradientTexture.magFilter = NearestFilter;
+
       return new MeshToonMaterial({
-        color: "#ffeded",
+        color,
         gradientMap: gradientTexture,
       });
     })()
   );
 
-  useFrame(({ mouse }) => {
-    const { position } = groupRef.current;
-
-    position.x += (mouse.x * 0.1 - position.x) * 0.1;
-    position.y += (mouse.y * 0.1 - position.y) * 0.1;
-  });
-
   return (
     <Suspense fallback={<Html>Loading...</Html>}>
-      <group ref={groupRef}>
-        <PerspectiveCamera
-          makeDefault
-          fov={35}
-          near={0.1}
-          far={100}
-          position={[0, 0, 6]}
-        />
-      </group>
+      <PerspectiveCamera
+        makeDefault
+        fov={35}
+        near={0.1}
+        far={100}
+        position={[0, 0, 6]}
+      />
       <directionalLight position={[1, 1, 0]} />
+
       <ScrollControls pages={geometries.length}>
         <Scroll>
+          <Parallax
+            color={color}
+            distance={distance}
+            particlesCount={200}
+            objectsCount={geometries.length}
+          />
           {geometries.map((geometry, index) => (
             <Page
               index={index}
@@ -72,6 +70,7 @@ const Experience: FunctionComponent = () => {
             />
           ))}
         </Scroll>
+
         <Scroll html>
           <section className="section">
             <h1>My Portfolio</h1>
