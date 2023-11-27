@@ -1,23 +1,18 @@
-import { useFrame } from "@react-three/fiber";
 import { FunctionComponent, useMemo } from "react";
 import { BufferAttribute } from "three";
 
-interface ParallaxProps {
+interface StarsProps {
   color: string;
   particlesCount: number;
   objectsCount: number;
   distance: number;
-  margin?: number;
-  delay?: number;
 }
 
-const Parallax: FunctionComponent<ParallaxProps> = ({
+const Stars: FunctionComponent<StarsProps> = ({
   particlesCount,
   objectsCount,
   distance,
   color,
-  margin = 0.1,
-  delay = 0.1,
 }) => {
   const positions = useMemo(() => {
     const raw = new Array(particlesCount * 3)
@@ -31,11 +26,6 @@ const Parallax: FunctionComponent<ParallaxProps> = ({
     return new BufferAttribute(new Float32Array(raw), 3);
   }, [particlesCount]);
 
-  useFrame(({ camera, pointer }) => {
-    camera.position.x += (pointer.x * margin - camera.position.x) * delay;
-    camera.position.y += (pointer.y * margin - camera.position.y) * delay;
-  });
-
   return (
     <points>
       <bufferGeometry>
@@ -46,4 +36,4 @@ const Parallax: FunctionComponent<ParallaxProps> = ({
   );
 };
 
-export default Parallax;
+export default Stars;

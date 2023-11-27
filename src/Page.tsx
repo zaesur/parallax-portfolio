@@ -21,17 +21,16 @@ const Page: FunctionComponent<PageProps> = ({ index, children, ...props }) => {
     const isVisible = data.visible(index / data.pages, 1 / data.pages);
 
     if (isVisible && !wasVisible) {
-      console.log(`Entered page ${index}`);
-       gsap.to(
-            groupRef.current.rotation,
-            {
-              duration: 1.5,
-              ease: 'power2.inOut',
-              x: '+=6',
-              y: '+=3',
-              z: '+=1.5'
-            } 
-        )
+      gsap.to(
+        groupRef.current.rotation,
+        {
+          duration: 1.5,
+          ease: 'power2.inOut',
+          x: '+=6',
+          y: '+=3',
+          z: '+=1.5'
+        } 
+      )
     }
 
     dataRef.current = isVisible;

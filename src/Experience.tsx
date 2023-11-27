@@ -16,7 +16,8 @@ import {
 import Page from "./Page";
 import gradientTexturePath from "/public/textures/gradients/3.jpg";
 import "./Experience.css";
-import Parallax from "./Parallax";
+import Stars from "./Stars";
+import { useFrame } from "@react-three/fiber";
 
 const geometries = [
   new TorusGeometry(1, 0.4, 16, 60),
@@ -25,6 +26,8 @@ const geometries = [
 ];
 
 const Experience: FunctionComponent = () => {
+  const delay = 0.1;
+  const margin = 0.1;
   const distance = 4;
   const color = "#ffeded";
   const gradientTexture = useTexture(gradientTexturePath);
@@ -40,6 +43,11 @@ const Experience: FunctionComponent = () => {
     })()
   );
 
+  useFrame(({ camera, pointer }) => {
+    camera.position.x += (pointer.x * margin - camera.position.x) * delay;
+    camera.position.y += (pointer.y * margin - camera.position.y) * delay;
+  });
+
   return (
     <Suspense fallback={<Html>Loading...</Html>}>
       <PerspectiveCamera
@@ -53,7 +61,7 @@ const Experience: FunctionComponent = () => {
 
       <ScrollControls pages={geometries.length}>
         <Scroll>
-          <Parallax
+          <Stars
             color={color}
             distance={distance}
             particlesCount={200}
