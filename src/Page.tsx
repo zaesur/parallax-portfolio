@@ -1,33 +1,47 @@
-import { MeshProps, useFrame } from "@react-three/fiber";
-import { FunctionComponent, useRef } from "react";
-import { BufferGeometry, Material, Mesh } from "three";
+import { useScroll } from "@react-three/drei";
+import { GroupProps, useFrame } from "@react-three/fiber";
+import gsap from "gsap";
+import { FunctionComponent, useEffect, useRef } from "react";
+import { Group } from "three";
 
-interface PageProps extends Pick<MeshProps, "position"> {
-  geometry: BufferGeometry;
-  material: Material;
+interface PageProps extends GroupProps {
   index: number;
-  total: number;
 }
 
-const Page: FunctionComponent<PageProps> = ({
-  geometry,
-  material,
-  index,
-  total,
-  ...props
-}) => {
-  const ref = useRef<Mesh>(null!);
+const Page: FunctionComponent<PageProps> = ({ index, children, ...props }) => {
+  const data = useScroll();
+  const dataRef = useRef(false);
+  const groupRef = useRef<Group>(null!);
 
   useFrame((_, delta) => {
-    ref.current.rotation.x += delta * 0.1;
-    ref.current.rotation.y += delta * 0.12;
+    groupRef.current.rotation.x += delta * 0.1;
+    groupRef.current.rotation.y += delta * 0.12;
+
+    const wasVisible = dataRef.current;
+    const isVisible = data.visible(index / data.pages, 1 / data.pages);
+
+    if (isVisible && !wasVisible) {
+      console.log(`Entered page ${index}`);
+       gsap.to(
+            groupRef.current.rotation,
+            {
+              duration: 1.5,
+              ease: 'power2.inOut',
+              x: '+=6',
+              y: '+=3',
+              z: '+=1.5'
+            } 
+        )
+    }
+
+    dataRef.current = isVisible;
   });
 
+
   return (
-    <mesh ref={ref} {...props}>
-      <primitive object={geometry} />
-      <primitive object={material} />
-    </mesh>
+    <group ref={groupRef} {...props}>
+      {children}
+    </group>
   );
 };
 

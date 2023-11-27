@@ -62,12 +62,14 @@ const Experience: FunctionComponent = () => {
           {geometries.map((geometry, index) => (
             <Page
               index={index}
-              total={geometries.length}
               key={geometry.uuid}
-              geometry={geometry}
-              material={material}
               position={[index % 2 ? 2 : -2, -distance * index, 0]}
-            />
+            >
+              <mesh>
+                <primitive object={geometry} />
+                <primitive object={material} />
+              </mesh>
+            </Page>
           ))}
         </Scroll>
 

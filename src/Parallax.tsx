@@ -31,9 +31,9 @@ const Parallax: FunctionComponent<ParallaxProps> = ({
     return new BufferAttribute(new Float32Array(raw), 3);
   }, [particlesCount]);
 
-  useFrame(({ camera, mouse }) => {
-    camera.position.x += (mouse.x * margin - camera.position.x) * delay;
-    camera.position.y += (mouse.y * margin - camera.position.y) * delay;
+  useFrame(({ camera, pointer }) => {
+    camera.position.x += (pointer.x * margin - camera.position.x) * delay;
+    camera.position.y += (pointer.y * margin - camera.position.y) * delay;
   });
 
   return (
